@@ -28,3 +28,7 @@ Reading the files will return the rows in that table which matches with that fie
 cat mount/students/name/nihaal
 # Equivalent to SELECT * FROM students WHERE name = 'nihaal'
 ```
+
+### Note
+
+The filesystem is written only for reading data from a static (not changing) sqlite3 database. It uses caching and so if the database was modified while the script is executing, it may show an older view.
