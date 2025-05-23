@@ -77,13 +77,20 @@ def get_table_field_values(table, field):
         values.append(row[0])
     return values
 
-# FIXME Return data as a JSON dict with the correct field names as keys
 @cached(cache=LRUCache(maxsize=1000))
 def get_table_field_value_data(table, field, value):
     global dbname
     conn = sqlite3.connect(dbname)
     cursor = conn.cursor()
-    rows = list(cursor.execute("SELECT * FROM " + table + " WHERE " + field + "='" + value + "'" ))
+    fields = get_table_fields(table)
+    field_string = ",".join(fields)
+    rows = []
+    for row in cursor.execute("SELECT " + field_string + " FROM " +
+                              table + " WHERE " + field + "='" + value + "'"):
+        rowdata = {}
+        for i, name_field in enumerate(fields):
+            rowdata[name_field] = row[i]
+        rows.append(rowdata)
     return json.dumps(rows, indent=4)
 
 def explode_path(path):
