@@ -74,7 +74,7 @@ def get_table_field_values(table, field):
     cursor = conn.cursor()
     values = []
     for row in cursor.execute("SELECT DISTINCT " + field + " FROM "+ table):
-        values.append(row[0])
+        values.append(str(row[0]))
     return values
 
 @cached(cache=LRUCache(maxsize=1000))
