@@ -13,6 +13,7 @@ import sqlite3
 import fuse
 from fuse import Fuse, Stat
 fuse.fuse_python_api = (0, 2)
+from cachetools import cached, LRUCache
 
 class FileStat(Stat):
     def __init__(self, size):
@@ -43,16 +44,20 @@ class FolderStat(Stat):
 # Sqlite functions
 dbname = None
 
+tables = []
 def get_tables():
+    global tables
+    if len(tables) != 0:
+        return tables
     global dbname
     conn = sqlite3.connect(dbname)
     cursor = conn.cursor()
-    tables = []
     for row in cursor.execute("SELECT name FROM sqlite_master WHERE type='table'"):
         tables.append(row[0])
     return tables
     
 # FIXME Prevent SQL injection in the SQL queries
+@cached(cache={})
 def get_table_fields(table):
     global dbname
     conn = sqlite3.connect(dbname)
@@ -62,6 +67,7 @@ def get_table_fields(table):
         fields.append(row[0])
     return fields
     
+@cached(cache=LRUCache(maxsize=1000))
 def get_table_field_values(table, field):
     global dbname
     conn = sqlite3.connect(dbname)
@@ -72,6 +78,7 @@ def get_table_field_values(table, field):
     return values
 
 # FIXME Return data as a JSON dict with the correct field names as keys
+@cached(cache=LRUCache(maxsize=1000))
 def get_table_field_value_data(table, field, value):
     global dbname
     conn = sqlite3.connect(dbname)

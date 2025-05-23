@@ -4,6 +4,7 @@ A FUSE filesystem to allow reading a SQLite3 Database as a set of folders and fi
 
 ```sh
 pip install --user fuse-python==1.0.9
+pip install --user cachetools==5.5.2
 python sqlitedir.py <mount_point> -o db=<db.sqlite>
 ```
 
