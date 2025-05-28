@@ -73,7 +73,7 @@ def get_table_field_values(table, field):
     conn = sqlite3.connect(dbname)
     cursor = conn.cursor()
     values = []
-    for row in cursor.execute("SELECT DISTINCT " + field + " FROM "+ table):
+    for row in cursor.execute("SELECT DISTINCT " + field + " FROM '"+ table + "'"):
         values.append(str(row[0]))
     return values
 
@@ -85,8 +85,8 @@ def get_table_field_value_data(table, field, value):
     fields = get_table_fields(table)
     field_string = ",".join(fields)
     rows = []
-    for row in cursor.execute("SELECT " + field_string + " FROM " +
-                              table + " WHERE " + field + "='" + value + "'"):
+    for row in cursor.execute("SELECT " + field_string + " FROM '" +
+                              table + "' WHERE " + field + "='" + value + "'"):
         rowdata = {}
         for i, name_field in enumerate(fields):
             rowdata[name_field] = row[i]
